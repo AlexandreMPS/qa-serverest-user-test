@@ -1,0 +1,1797 @@
+{
+	"info": {
+		"_postman_id": "43b27b73-10c9-4477-853d-d2a79d10eca8",
+		"name": "Serverest-test-user",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20683855"
+	},
+	"item": [
+		{
+			"name": "/usuarios test",
+			"item": [
+				{
+					"name": "Positivos OK",
+					"item": [
+						{
+							"name": "Cadastrar usuário Admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"const url = pm.environment.get('baseURL')\r",
+											"const response = pm.response.json()\r",
+											"const atributos = ['message', '_id']\r",
+											"\r",
+											"atributos.forEach((atributo) =>{\r",
+											"    pm.test(`Resposta contém atributo \"${atributo}\"`, () =>{\r",
+											"        pm.expect(response[atributo]).to.exist\r",
+											"    })    \r",
+											"})\r",
+											"pm.test(`O body \"${[atributos[0]]}\" da resposta está correto`, () =>{\r",
+											"        pm.expect(response[atributos[0]]).have.string(`Cadastro realizado com sucesso`);\r",
+											"    })\r",
+											"\r",
+											"const deleteUs = response._id\r",
+											"const postRequestdelete = {\r",
+											"    url: `${url}/usuarios/${deleteUs}`,\r",
+											"    method: 'DELETE'\r",
+											"}\r",
+											"pm.sendRequest(postRequestdelete, function (err, response) {\r",
+											"    const res = response.json()\r",
+											"    console.log(err ? err : res);\r",
+											"    try {\r",
+											"        \r",
+											"    } catch{\r",
+											"        console.warn(\"Falha na exclusão\")\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"{{$randomFullName}}\",\r\n  \"email\": \"{{$randomEmail}}\",\r\n  \"password\": \"{{$randomPassword}}\",\r\n  \"administrador\": \"true\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/usuarios",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Cadastrar usuário Comum",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json()\r",
+											"const atributos = ['message', '_id']\r",
+											"\r",
+											"const url = pm.environment.get('baseURL')\r",
+											"atributos.forEach((atributo) =>{\r",
+											"    pm.test(`Resposta contém atributo \"${atributo}\"`, () =>{\r",
+											"        pm.expect(response[atributo]).to.exist\r",
+											"    })    \r",
+											"})\r",
+											"pm.test(`O body \"${[atributos[0]]}\" da resposta está correto`, () =>{\r",
+											"        pm.expect(response[atributos[0]]).have.string(`Cadastro realizado com sucesso`);\r",
+											"    })\r",
+											"\r",
+											"const deleteUs = response._id\r",
+											"const postRequestdelete = {\r",
+											"    url: `${url}/usuarios/${deleteUs}`,\r",
+											"    method: 'DELETE'\r",
+											"}\r",
+											"pm.sendRequest(postRequestdelete, function (err, response) {\r",
+											"    const res = response.json()\r",
+											"    console.log(err ? err : res);\r",
+											"    try {\r",
+											"        \r",
+											"    } catch{\r",
+											"        console.warn(\"Falha na exclusão\")\r",
+											"    }\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"{{$randomFullName}}\",\r\n  \"email\": \"{{$randomEmail}}\",\r\n  \"password\": \"{{$randomPassword}}\",\r\n  \"administrador\": \"false\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/usuarios",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Excluir usuário",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const url = pm.environment.get('baseURL')\r",
+											"let name = pm.variables.replaceIn('{{$randomFullName}}')\r",
+											"let email = pm.variables.replaceIn('{{$randomEmail}}')\r",
+											"let senha = pm.variables.replaceIn('{{$randomPassword}}')\r",
+											"//var jsonData = JSON.parse(responseBody);\r",
+											"//pm.setEnvironmentVariable(\"_id\", jsonData._id);\r",
+											"\r",
+											"const postRequestCadastro = {\r",
+											"\r",
+											"    url: `${url}/usuarios`, \r",
+											"    method: 'POST',\r",
+											"    header: {\r",
+											"        'Content-Type': 'application/json'\r",
+											"    },\r",
+											"    body: {\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify({\r",
+											"            \"nome\": name,\r",
+											"            \"email\": email,\r",
+											"            \"password\": senha,\r",
+											"            \"administrador\": \"true\"\r",
+											"        })\r",
+											"    }\r",
+											"\r",
+											"}\r",
+											"pm.sendRequest(postRequestCadastro, (err, response) => {\r",
+											"    \r",
+											"    const res = response.json()\r",
+											"    console.log(err ? err : res);\r",
+											"    try {\r",
+											"        //operação\r",
+											"        pm.environment.set('emailValido', email)\r",
+											"        pm.environment.set('senhaValida', senha)\r",
+											"        pm.environment.set('_id', res._id)\r",
+											"        \r",
+											"    } catch{\r",
+											"        //outraOp\r",
+											"        console.warn(\"Falha no cadastro\")\r",
+											"    }\r",
+											"})\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json()\r",
+											"const atributos = ['message']\r",
+											"\r",
+											"atributos.forEach((atributo) =>{\r",
+											"    pm.test(`Resposta contém atributo \"${atributo}\"`, () =>{\r",
+											"        pm.expect(response[atributo]).to.exist\r",
+											"    })    \r",
+											"})\r",
+											"pm.test(`O body \"${[atributos[0]]}\" da resposta está correto`, () =>{\r",
+											"        pm.expect(response[atributos[0]]).have.string(`Registro excluído com sucesso`);\r",
+											"    })"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/usuarios/{{_id}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"usuarios",
+										"{{_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Listar usuários",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json()\r",
+											"const atributos = ['quantidade', 'usuarios']\r",
+											"\r",
+											"atributos.forEach((atributo) =>{\r",
+											"    pm.test(`Resposta contém atributo \"${atributo}\"`, () =>{\r",
+											"        pm.expect(response[atributo]).to.exist\r",
+											"    })\r",
+											"})\r",
+											"\r",
+											"//colaboração: Alexandre e Milton\r",
+											"// Validação de schema opção 1\r",
+											"// var jsonData = JSON.parse(responseBody)\r",
+											"\r",
+											"// pm.test(\"Validating schema\", () =>{\r",
+											"//     pm.response.to.have.jsonSchema(jsonData);\r",
+											"//     console.log(jsonData)    \r",
+											"// })\r",
+											"\r",
+											"//Validação de schema opção 2\r",
+											"\r",
+											"var schema = {\r",
+											"  \"type\": \"object\",\r",
+											"  \"properties\": {\r",
+											"    \"quantidade\": {\r",
+											"      \"type\": \"integer\"\r",
+											"    },\r",
+											"    \"usuarios\": {\r",
+											"      \"type\": \"array\",\r",
+											"      \"items\": [\r",
+											"        {\r",
+											"          \"type\": \"object\",\r",
+											"          \"properties\": {\r",
+											"            \"nome\": {\r",
+											"              \"type\": \"string\"\r",
+											"            },\r",
+											"            \"email\": {\r",
+											"              \"type\": \"string\"\r",
+											"            },\r",
+											"            \"password\": {\r",
+											"              \"type\": \"string\"\r",
+											"            },\r",
+											"            \"administrador\": {\r",
+											"              \"type\": \"string\"\r",
+											"            },\r",
+											"            \"_id\": {\r",
+											"              \"type\": \"string\"\r",
+											"            }\r",
+											"          },\r",
+											"          \"required\": [\r",
+											"            \"nome\",\r",
+											"            \"email\",\r",
+											"            \"password\",\r",
+											"            \"administrador\",\r",
+											"            \"_id\"\r",
+											"          ]\r",
+											"        }\r",
+											"  \r",
+											"      ]\r",
+											"    }\r",
+											"  },\r",
+											"  \"required\": [\r",
+											"    \"quantidade\",\r",
+											"    \"usuarios\"\r",
+											"  ]\r",
+											"}\r",
+											"\r",
+											"pm.test(\"Validating schema\", () =>{\r",
+											"    pm.response.to.have.jsonSchema(schema);\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/usuarios",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Listar usuários por id",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const url = pm.environment.get('baseURL')\r",
+											"\r",
+											"\r",
+											"const getRequestUsuarios = {\r",
+											"\r",
+											"    url: `${url}/usuarios`, \r",
+											"    method: 'GET',\r",
+											"    header: {\r",
+											"        'Content-Type': 'application/json'\r",
+											"    }\r",
+											"    \r",
+											"\r",
+											"}\r",
+											"pm.sendRequest(getRequestUsuarios, (err, response) => {\r",
+											"    \r",
+											"    const res = response.json()\r",
+											"    console.log(err ? err : res);\r",
+											"    try {\r",
+											"        //operação        \r",
+											"        pm.environment.set('_id', res.usuarios[0]._id)\r",
+											"        \r",
+											"    } catch{\r",
+											"        //outraOp\r",
+											"        console.warn(\"Falha na requisição\")\r",
+											"    }\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json()\r",
+											"const atributos = ['nome', 'email', 'password', 'administrador', '_id']\r",
+											"\r",
+											"atributos.forEach((atributo) =>{\r",
+											"    pm.test(`Resposta contém atributo \"${atributo}\" e não é nulo ou vazio`, () =>{\r",
+											"        pm.expect(response[atributo]).to.exist\r",
+											"        pm.expect(response[atributo]).to.not.null\r",
+											"        pm.expect(response[atributo]).to.not.empty\r",
+											"    })\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/usuarios/{{_id}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"usuarios",
+										"{{_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Editar usuário cadastrado",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json()\r",
+											"const atributos = ['message']\r",
+											"\r",
+											"atributos.forEach((atributo) =>{\r",
+											"    pm.test(`Resposta contém atributo \"${atributo}\"`, () =>{\r",
+											"        pm.expect(response[atributo]).to.exist\r",
+											"    })    \r",
+											"})\r",
+											"pm.test(`O body \"${[atributos[0]]}\" da resposta está correto`, () =>{\r",
+											"        pm.expect(response[atributos[0]]).have.string(`Registro alterado com sucesso`);\r",
+											"    })\r",
+											"\r",
+											"const url = pm.environment.get('baseURL')\r",
+											"const deleteUs = pm.environment.get('_id')\r",
+											"const postRequestdelete = {\r",
+											"    url: `${url}/usuarios/${deleteUs}`,\r",
+											"    method: 'DELETE'\r",
+											"}\r",
+											"pm.sendRequest(postRequestdelete, function (err, response) {\r",
+											"    const res = response.json()\r",
+											"    console.log(err ? err : res);\r",
+											"    try {\r",
+											"        \r",
+											"    } catch{\r",
+											"        console.warn(\"Falha na exclusão\")\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const url = pm.environment.get('baseURL')\r",
+											"let name = pm.variables.replaceIn('{{$randomFullName}}')\r",
+											"let email = pm.variables.replaceIn('{{$randomEmail}}')\r",
+											"let senha = pm.variables.replaceIn('{{$randomPassword}}')\r",
+											"//var jsonData = JSON.parse(responseBody);\r",
+											"//pm.setEnvironmentVariable(\"_id\", jsonData._id);\r",
+											"\r",
+											"const postRequestCadastro = {\r",
+											"\r",
+											"    url: `${url}/usuarios`, \r",
+											"    method: 'POST',\r",
+											"    header: {\r",
+											"        'Content-Type': 'application/json'\r",
+											"    },\r",
+											"    body: {\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify({\r",
+											"            \"nome\": name,\r",
+											"            \"email\": email,\r",
+											"            \"password\": senha,\r",
+											"            \"administrador\": \"true\"\r",
+											"        })\r",
+											"    }\r",
+											"\r",
+											"}\r",
+											"pm.sendRequest(postRequestCadastro, (err, response) => {\r",
+											"    \r",
+											"    const res = response.json()\r",
+											"    console.log(err ? err : res);\r",
+											"    try {\r",
+											"        //operação\r",
+											"        pm.environment.set('emailValido', email)\r",
+											"        pm.environment.set('senhaValida', senha)\r",
+											"        pm.environment.set('_id', res._id)\r",
+											"        \r",
+											"    } catch{\r",
+											"        //outraOp\r",
+											"        console.warn(\"Falha no cadastro\")\r",
+											"    }\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"alterado da silva\",\r\n  \"email\": \"{{$randomEmail}}\",\r\n  \"password\": \"{{$randomPassword}}\",\r\n  \"administrador\": \"true\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/usuarios/{{_id}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"usuarios",
+										"{{_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Editar usuário não cadastrado",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json()\r",
+											"const atributos = ['message', '_id']\r",
+											"\r",
+											"atributos.forEach((atributo) =>{\r",
+											"    pm.test(`Resposta contém atributo \"${atributo}\"`, () =>{\r",
+											"        pm.expect(response[atributo]).to.exist\r",
+											"    })    \r",
+											"})\r",
+											"pm.test(`O body \"${[atributos[0]]}\" da resposta está correto`, () =>{\r",
+											"        pm.expect(response[atributos[0]]).have.string(`Cadastro realizado com sucesso`);\r",
+											"    })\r",
+											"\r",
+											"const url = pm.environment.get('baseURL')\r",
+											"const deleteUs = response._id\r",
+											"const postRequestdelete = {\r",
+											"    url: `${url}/usuarios/${deleteUs}`,\r",
+											"    method: 'DELETE'\r",
+											"}\r",
+											"pm.sendRequest(postRequestdelete, function (err, response) {\r",
+											"    const res = response.json()\r",
+											"    console.log(err ? err : res);\r",
+											"    try {\r",
+											"        \r",
+											"    } catch{\r",
+											"        console.warn(\"Falha na exclusão\")\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"{{$randomFullName}}\",\r\n  \"email\": \"{{$randomEmail}}\",\r\n  \"password\": \"{{$randomPassword}}\",\r\n  \"administrador\": \"true\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/usuarios/{{$randomPassword}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"usuarios",
+										"{{$randomPassword}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Negativos OK",
+					"item": [
+						{
+							"name": "Cadastrar usuário com email vazio",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {\r",
+											"    pm.response.to.have.status(400);    \r",
+											"});\r",
+											"const response = pm.response.json()\r",
+											"const atributos = ['email']\r",
+											"\r",
+											"atributos.forEach((atributo) =>{\r",
+											"    pm.test(`Resposta contém atributo \"${atributo}\"`, () =>{\r",
+											"        pm.expect(response[atributo]).to.exist\r",
+											"    })\r",
+											"})\r",
+											"\r",
+											"pm.test(\"O Body da resposta está correto\", () => {\r",
+											"    pm.expect(response.email).have.string(\"email não pode ficar em branco\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"{{$randomFullName}}\",\r\n  \"email\": \"\",\r\n  \"password\": \"{{$randomPassword}}\",\r\n  \"administrador\": \"true\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/usuarios",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Cadastrar usuário com senha vazia",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {\r",
+											"    pm.response.to.have.status(400);    \r",
+											"});\r",
+											"const response = pm.response.json()\r",
+											"const atributos = ['password']\r",
+											"\r",
+											"atributos.forEach((atributo) =>{\r",
+											"    pm.test(`Resposta contém atributo \"${atributo}\"`, () =>{\r",
+											"        pm.expect(response[atributo]).to.exist\r",
+											"    })\r",
+											"})\r",
+											"\r",
+											"pm.test(\"O Body da resposta está correto\", () => {\r",
+											"    pm.expect(response.password).have.string(\"password não pode ficar em branco\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"{{$randomFullName}}\",\r\n  \"email\": \"{{emailValido}}\",\r\n  \"password\": \"{{senhaVazia}}\",\r\n  \"administrador\": \"true\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/usuarios",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Cadastrar usuário com senha inválida",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);    \r",
+											"});\r",
+											"const response = pm.response.json()\r",
+											"const atributos = ['password']\r",
+											"\r",
+											"atributos.forEach((atributo) =>{\r",
+											"    pm.test(`Resposta contém atributo \"${atributo}\"`, () =>{\r",
+											"        pm.expect(response[atributo]).to.exist\r",
+											"    })\r",
+											"})\r",
+											"\r",
+											"pm.test(\"O Body da resposta está correto\", () => {\r",
+											"    pm.expect(response.password).have.string(\"Senha não atende aos requisitos mínimos de criação\");\r",
+											"});\r",
+											"\r",
+											"const url = pm.environment.get('baseURL')\r",
+											"const deleteUs = response._id\r",
+											"const postRequestdelete = {\r",
+											"    url: `${url}/usuarios/${deleteUs}`,\r",
+											"    method: 'DELETE'\r",
+											"}\r",
+											"pm.sendRequest(postRequestdelete, function (err, response) {\r",
+											"    const res = response.json()\r",
+											"    console.log(err ? err : res);\r",
+											"    try {\r",
+											"        \r",
+											"    } catch{\r",
+											"        console.warn(\"Falha na exclusão\")\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"{{$randomFullName}}\",\r\n  \"email\": \"{{emailValido}}\",\r\n  \"password\": \"{{senhaInvalida}}\",\r\n  \"administrador\": \"true\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/usuarios",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Cadastrar usuário sem body",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {\r",
+											"    pm.response.to.have.status(400);    \r",
+											"});\r",
+											"const response = pm.response.json()\r",
+											"const atributos = ['nome', 'email', 'password', 'administrador']\r",
+											"\r",
+											"atributos.forEach((atributo) =>{\r",
+											"    pm.test(`Resposta contém atributo \"${atributo}\"`, () =>{\r",
+											"        pm.expect(response[atributo]).to.exist\r",
+											"    })\r",
+											"    pm.test(`O body da resposta \"${atributo}\" está correto`, () =>{\r",
+											"        pm.expect(response[atributo]).have.string(`${atributo} é obrigatório`);\r",
+											"    })\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/usuarios",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Cadastrar usuário com body vazio",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {\r",
+											"    pm.response.to.have.status(400);    \r",
+											"});\r",
+											"const response = pm.response.json()\r",
+											"const atributos = ['nome', 'email', 'password', 'administrador']\r",
+											"\r",
+											"atributos.forEach((atributo) =>{\r",
+											"    pm.test(`Resposta contém atributo \"${atributo}\"`, () =>{\r",
+											"        pm.expect(response[atributo]).to.exist\r",
+											"    })\r",
+											"    pm.test(`O body da resposta \"${atributo}\" está correto`, () =>{\r",
+											"        pm.expect(response[atributo]).have.string(`${atributo} é obrigatório`);\r",
+											"    })\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{baseURL}}/usuarios",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Cadastrar email já cadastrado",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const url = pm.environment.get('baseURL')\r",
+											"let name = pm.variables.replaceIn('{{$randomFullName}}')\r",
+											"let email = pm.variables.replaceIn('{{$randomEmail}}')\r",
+											"let senha = pm.variables.replaceIn('{{$randomPassword}}')\r",
+											"\r",
+											"\r",
+											"const postRequestCadastro = {\r",
+											"\r",
+											"    url: `${url}/usuarios`, \r",
+											"    method: 'POST',\r",
+											"    header: {\r",
+											"        'Content-Type': 'application/json'\r",
+											"    },\r",
+											"    body: {\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify({\r",
+											"            \"nome\": name,\r",
+											"            \"email\": email,\r",
+											"            \"password\": senha,\r",
+											"            \"administrador\": \"true\"\r",
+											"        })\r",
+											"    }\r",
+											"\r",
+											"}\r",
+											"pm.sendRequest(postRequestCadastro, (err, response) => {\r",
+											"    const res = response.json()\r",
+											"    console.log(err ? err : res);\r",
+											"    try {\r",
+											"        //operação\r",
+											"        pm.environment.set('emailValido', email)\r",
+											"        pm.environment.set('senhaValida', senha)\r",
+											"        pm.environment.set('_id', res._id)\r",
+											"        \r",
+											"    } catch{\r",
+											"        //outraOp\r",
+											"        console.warn(\"Falha no cadastro\")\r",
+											"    }\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {\r",
+											"    pm.response.to.have.status(400);    \r",
+											"});\r",
+											"const response = pm.response.json()\r",
+											"const atributos = ['message']\r",
+											"\r",
+											"atributos.forEach((atributo) =>{\r",
+											"    pm.test(`Resposta contém atributo \"${atributo}\"`, () =>{\r",
+											"        pm.expect(response[atributo]).to.exist\r",
+											"    })\r",
+											"})\r",
+											"\r",
+											"pm.test(\"O Body da resposta está correto\", () => {\r",
+											"    pm.expect(response.message).have.string(\"Este email já está sendo usado\");\r",
+											"});\r",
+											"const url = pm.environment.get('baseURL')\r",
+											"const deleteUs = pm.environment.get('_id')\r",
+											"const postRequestdelete = {\r",
+											"    url: `${url}/usuarios/${deleteUs}`,\r",
+											"    method: 'DELETE'\r",
+											"}\r",
+											"pm.sendRequest(postRequestdelete, function (err, response) {\r",
+											"    const res = response.json()\r",
+											"    console.log(err ? err : res);\r",
+											"    try {\r",
+											"        \r",
+											"    } catch{\r",
+											"        console.warn(\"Falha na exclusão\")\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"Fulano da Silva\",\r\n  \"email\": \"{{emailValido}}\",\r\n  \"password\": \"teste\",\r\n  \"administrador\": \"true\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/usuarios",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Listar usuários por id (usuário não encontrado)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json()\r",
+											"const atributos = ['message']\r",
+											"\r",
+											"atributos.forEach((atributo) =>{\r",
+											"    pm.test(`Resposta contém atributo \"${atributo}\"`, () =>{\r",
+											"        pm.expect(response[atributo]).to.exist\r",
+											"    })\r",
+											"})\r",
+											"\r",
+											"pm.test(\"O Body da resposta está correto\", () => {\r",
+											"    pm.expect(response.message).have.string(\"Usuário não encontrado\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/usuarios/{{_idInvalido}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"usuarios",
+										"{{_idInvalido}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Editar usuário com email já cadastrado",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const url = pm.environment.get('baseURL')\r",
+											"let name = pm.variables.replaceIn('{{$randomFullName}}')\r",
+											"let email = pm.variables.replaceIn('{{$randomEmail}}')\r",
+											"let senha = pm.variables.replaceIn('{{$randomPassword}}')\r",
+											"\r",
+											"\r",
+											"const usuarios = {\r",
+											"\r",
+											"    url: `${url}/usuarios`, \r",
+											"    method: 'POST',\r",
+											"    header: {\r",
+											"        'Content-Type': 'application/json'\r",
+											"    },\r",
+											"    body: {\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify({\r",
+											"            \"nome\": name,\r",
+											"            \"email\": email,\r",
+											"            \"password\": senha,\r",
+											"            \"administrador\": \"true\"\r",
+											"        })\r",
+											"    }\r",
+											"}\r",
+											"\r",
+											"pm.sendRequest(usuarios, function (err, response) {\r",
+											"    const res = response.json()\r",
+											"    console.log(err ? err : res);\r",
+											"    try {\r",
+											"        //operação\r",
+											"        pm.environment.set('emailValido', email)\r",
+											"        pm.environment.set('senhaValida', senha)\r",
+											"        pm.environment.set('_id', res._id)\r",
+											"\r",
+											"\r",
+											"        \r",
+											"const getusuarios = {\r",
+											"\r",
+											"    url: `${url}/usuarios`, //variavel\r",
+											"    method: 'GET',\r",
+											"    header: {\r",
+											"        'Content-Type': 'application/json'\r",
+											"    }\r",
+											"\r",
+											"}\r",
+											"pm.sendRequest(getusuarios, function (err, response) {\r",
+											"    const res = response.json()\r",
+											"    console.log(err ? err : res);\r",
+											"    try {\r",
+											"        //operação\r",
+											"        pm.environment.set('_id', res.usuarios[0]._id)\r",
+											"        pm.environment.set('emailValido', res.usuarios[1].email)\r",
+											"    } catch{\r",
+											"        //outraOp\r",
+											"        console.warn(\"Falha na busca\")\r",
+											"    }\r",
+											"})\r",
+											"  \r",
+											"    } catch{\r",
+											"        //outraOp\r",
+											"        console.warn(\"Falha ao cadastrar\")\r",
+											"    }\r",
+											"});\r",
+											"\r",
+											"\r",
+											"\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json()\r",
+											"const atributos = ['message']\r",
+											"\r",
+											"atributos.forEach((atributo) =>{\r",
+											"    pm.test(`Resposta contém atributo \"${atributo}\"`, () =>{\r",
+											"        pm.expect(response[atributo]).to.exist\r",
+											"    })\r",
+											"})\r",
+											"\r",
+											"pm.test(\"O Body da resposta está correto\", () => {\r",
+											"    pm.expect(response.message).have.string(\"Este email já está sendo usado\");\r",
+											"});\r",
+											"\r",
+											"const url = pm.environment.get('baseURL')\r",
+											"const deleteUs = pm.environment.get('_id')\r",
+											"const postRequestdelete = {\r",
+											"    url: `${url}/usuarios/${deleteUs}`,\r",
+											"    method: 'DELETE'\r",
+											"}\r",
+											"pm.sendRequest(postRequestdelete, function (err, response) {\r",
+											"    const res = response.json()\r",
+											"    console.log(err ? err : res);\r",
+											"    try {\r",
+											"        \r",
+											"    } catch{\r",
+											"        console.warn(\"Falha na exclusão\")\r",
+											"    }\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"{{$randomFullName}}\",\r\n  \"email\": \"{{emailValido}}\",\r\n  \"password\": \"teste\",\r\n  \"administrador\": \"true\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/usuarios/{{_id}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"usuarios",
+										"{{_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Excluir usuário com id não encontrado",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json()\r",
+											"const atributos = ['message']\r",
+											"\r",
+											"atributos.forEach((atributo) =>{\r",
+											"    pm.test(`Resposta contém atributo \"${atributo}\"`, () =>{\r",
+											"        pm.expect(response[atributo]).to.exist\r",
+											"    })\r",
+											"})\r",
+											"\r",
+											"pm.test(\"O Body da resposta está correto\", () => {\r",
+											"    pm.expect(response.message).have.string(\"Usuário não encontrado. Nenhum registro excluído\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/usuarios/{{_idInvalido}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"usuarios",
+										"{{_idInvalido}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Excluir usuário com carrinho cadastrado",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const url = pm.environment.get('baseURL')\r",
+											"\r",
+											"\r",
+											"const getRequestCarrinhos = {\r",
+											"\r",
+											"    url: `${url}/carrinhos`, \r",
+											"    method: 'GET',\r",
+											"    header: {\r",
+											"        'Content-Type': 'application/json'\r",
+											"    }\r",
+											"    \r",
+											"\r",
+											"}\r",
+											"pm.sendRequest(getRequestCarrinhos, (err, response) => {\r",
+											"    \r",
+											"    const res = response.json()\r",
+											"    console.log(err ? err : res);\r",
+											"    try {\r",
+											"        //operação        \r",
+											"        pm.environment.set('_id', res.carrinhos[0].idUsuario)\r",
+											"        \r",
+											"        \r",
+											"    } catch{\r",
+											"        //outraOp\r",
+											"        console.warn(\"Falha na requisição\")\r",
+											"    }\r",
+											"})\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json()\r",
+											"const atributos = ['message', 'idCarrinho']\r",
+											"\r",
+											"atributos.forEach((atributo) =>{\r",
+											"    pm.test(`Resposta contém atributo \"${atributo}\"`, () =>{\r",
+											"        pm.expect(response[atributo]).to.exist\r",
+											"    })\r",
+											"})\r",
+											"\r",
+											"pm.test(\"O Body da resposta está correto\", () => {\r",
+											"    pm.expect(response.message).have.string(\"Não é permitido excluir usuário com carrinho cadastrado\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/usuarios/{{_id}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"usuarios",
+										"{{_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Cadastrar usuário sem aspas no body",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Colaboração de Matheus Victor Moreira pela ideia do teste\r",
+											"\r",
+											"pm.test(\"Status code is 400\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json()\r",
+											"const atributos = ['message']\r",
+											"\r",
+											"const url = pm.environment.get('baseURL')\r",
+											"atributos.forEach((atributo) =>{\r",
+											"    pm.test(`Resposta contém atributo \"${atributo}\"`, () =>{\r",
+											"        pm.expect(response[atributo]).to.exist\r",
+											"    })    \r",
+											"})\r",
+											"pm.test(`O body \"${[atributos[0]]}\" da resposta está correto`, () =>{\r",
+											"        pm.expect(response[atributos[0]]).have.string(`Adicione aspas em todos os valores. Esse problema já está sendo investigado na issue https://github.com/ServeRest/ServeRest/issues/225`);\r",
+											"    })\r",
+											"\r",
+											"const deleteUs = response._id\r",
+											"const postRequestdelete = {\r",
+											"    url: `${url}/usuarios/${deleteUs}`,\r",
+											"    method: 'DELETE'\r",
+											"}\r",
+											"pm.sendRequest(postRequestdelete, function (err, response) {\r",
+											"    const res = response.json()\r",
+											"    console.log(err ? err : res);\r",
+											"    try {\r",
+											"        \r",
+											"    } catch{\r",
+											"        console.warn(\"Falha na exclusão\")\r",
+											"    }\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"{{$randomFullName}},\r\n  \"email\": \"{{$randomEmail}}\",\r\n  \"password\": \"{{$randomPassword}}\",\r\n  \"administrador\": \"false\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/usuarios",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "/login test",
+			"item": [
+				{
+					"name": "Positivos OK",
+					"item": [
+						{
+							"name": "Realizar login com sucesso",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const response = pm.response.json()\r",
+											"pm.environment.set('token', response.authorization.slice(7))\r",
+											"let tokenTeste = pm.environment.get('token')\r",
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const atributos = ['message', 'authorization']\r",
+											"\r",
+											"atributos.forEach((atributo) =>{\r",
+											"    pm.test(`Resposta contém atributo \"${atributo}\"`, () =>{\r",
+											"        pm.expect(pm.response.json()[atributo]).to.exist\r",
+											"    })\r",
+											"})\r",
+											"\r",
+											"pm.test(\"O Body da resposta está correto\", function () {\r",
+											"    pm.expect(pm.response.json()[atributos[0]]).to.include(\"Login realizado com sucesso\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"O Body da resposta está correto\", function () {\r",
+											"    pm.expect(pm.response.json()[atributos[1]]).have.string(`Bearer ${tokenTeste}`);\r",
+											"});\r",
+											"const url = pm.environment.get('baseURL')\r",
+											"const deleteUs = pm.environment.get('_id')\r",
+											"const postRequestdelete = {\r",
+											"    url: `${url}/usuarios/${deleteUs}`,\r",
+											"    method: 'DELETE'\r",
+											"}\r",
+											"pm.sendRequest(postRequestdelete, function (err, response) {\r",
+											"    const res = response.json()\r",
+											"    console.log(err ? err : res);\r",
+											"    try {\r",
+											"        \r",
+											"    } catch{\r",
+											"        console.warn(\"Falha na exclusão\")\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const url = pm.environment.get('baseURL')\r",
+											"let name = pm.variables.replaceIn('{{$randomFullName}}')\r",
+											"let email = pm.variables.replaceIn('{{$randomEmail}}')\r",
+											"let senha = pm.variables.replaceIn('{{$randomPassword}}')\r",
+											"let email1 = pm.environment.get(\"emailValido\")\r",
+											"let senha1 = pm.environment.get(\"senhaValida\")\r",
+											"\r",
+											"const postRequestCadastro = {\r",
+											"\r",
+											"    url: `${url}/usuarios`, \r",
+											"    method: 'POST',\r",
+											"    header: {\r",
+											"        'Content-Type': 'application/json'\r",
+											"    },\r",
+											"    body: {\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify({\r",
+											"            \"nome\": name,\r",
+											"            \"email\": email,\r",
+											"            \"password\": senha,\r",
+											"            \"administrador\": \"true\"\r",
+											"        })\r",
+											"    }\r",
+											"\r",
+											"}\r",
+											"pm.sendRequest(postRequestCadastro, (err, response) => {\r",
+											"    const res = response.json()\r",
+											"    console.log(err ? err : res);\r",
+											"    try {\r",
+											"        //operação\r",
+											"        pm.environment.set('emailValido', email)\r",
+											"        pm.environment.set('senhaValida', senha)\r",
+											"        pm.environment.set('_id', res._id)\r",
+											"        \r",
+											"    } catch{\r",
+											"        //outraOp\r",
+											"        console.warn(\"Falha no cadastro\")\r",
+											"    }\r",
+											"})\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"{{emailValido}}\",\r\n  \"password\": \"{{senhaValida}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/login",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Negativos OK",
+					"item": [
+						{
+							"name": "Realizar login com email vazio",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"const atributos = ['email']\r",
+											"\r",
+											"atributos.forEach((atributo) =>{\r",
+											"    pm.test(`Resposta contém atributo \"${atributo}\"`, () =>{\r",
+											"        pm.expect(pm.response.json()[atributo]).to.exist\r",
+											"    })\r",
+											"})\r",
+											"\r",
+											"pm.test(\"O Body da resposta está correto\", function () {\r",
+											"    pm.expect(pm.response.json()[atributos[0]]).to.include(\"email não pode ficar em branco\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"{{emailVazio}}\",\r\n  \"password\": \"teste\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/login",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Realizar login com senha inválida",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"const atributos = ['message']\r",
+											"\r",
+											"atributos.forEach((atributo) =>{\r",
+											"    pm.test(`Resposta contém atributo \"${atributo}\"`, () =>{\r",
+											"        pm.expect(pm.response.json()[atributo]).to.exist\r",
+											"    })\r",
+											"})\r",
+											"\r",
+											"pm.test(\"O Body da resposta está correto\", () => {\r",
+											"    pm.expect(pm.response.json()[atributos[0]]).to.include(\"Email e/ou senha inválidos\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"fulano@qa.com\",\r\n  \"password\": \"{{senhaInvalida}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/login",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Realizar login com senha vazia",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json()\r",
+											"const atributos = ['password']\r",
+											"\r",
+											"atributos.forEach((atributo) =>{\r",
+											"    pm.test(`Resposta contém atributo \"${atributo}\"`, () =>{\r",
+											"        pm.expect(response[atributo]).to.exist\r",
+											"    })\r",
+											"})\r",
+											"\r",
+											"pm.test(\"O Body da resposta está correto\", () => {\r",
+											"    pm.expect(response.password).have.string(\"password não pode ficar em branco\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"fulano@qa.com\",\r\n  \"password\": \"{{senhaVazia}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/login",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Realizar login sem body",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json()\r",
+											"const atributos = ['email', 'password']\r",
+											"\r",
+											"atributos.forEach((atributo) =>{\r",
+											"    pm.test(`Resposta contém atributo \"${atributo}\"`, () =>{\r",
+											"        pm.expect(response[atributo]).to.exist\r",
+											"    })\r",
+											"    pm.test(`O body da resposta \"${atributo}\" está correto`, () =>{\r",
+											"        pm.expect(response[atributo]).have.string(`${atributo} é obrigatório`);\r",
+											"    })\r",
+											"})\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/login",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Realizar login com body vazio",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json()\r",
+											"const atributos = ['email', 'password']\r",
+											"\r",
+											"atributos.forEach((atributo) =>{\r",
+											"    pm.test(`Resposta contém atributo \"${atributo}\"`, () =>{\r",
+											"        pm.expect(response[atributo]).to.exist\r",
+											"    })\r",
+											"    pm.test(`O body da resposta \"${atributo}\" está correto`, () =>{\r",
+											"        pm.expect(response[atributo]).have.string(`${atributo} é obrigatório`);\r",
+											"    })\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/login",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}
